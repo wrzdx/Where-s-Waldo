@@ -1,0 +1,30 @@
+body {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: var(--dark-blue);
+  color: var(--light);
+
+  /* Variables */
+  --dark-blue: #202129;
+  --light: #f8f8f2;
+  --red: #fd9494;
+  --grey: #5c5b62;
+  --darker-blue: #2d2e39;
+}
+
+#root {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 1300px;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 3vw, 2rem);
+}
+
+a {
+  text-decoration: none;
+  color: var(--light);
+}

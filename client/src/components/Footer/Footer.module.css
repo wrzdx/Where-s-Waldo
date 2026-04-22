@@ -1,0 +1,29 @@
+.footer {
+  border-top: 1px solid var(--grey);
+  box-shadow: 0 10px 20px var(--grey);
+}
+
+.footer > div {
+  display: flex;
+  padding: 0.25rem;
+}
+
+.footer a {
+  display: flex;
+  align-items: center;
+  margin: auto;
+  gap: 0.5ch;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.footer svg {
+  will-change: transform;
+  width: 1.1em;
+  height: 1.1em;
+  transition: transform 0.25s;
+}
+
+.footer svg:hover {
+  transform: scale(1.2);
+}
