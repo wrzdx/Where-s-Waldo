@@ -1,14 +1,13 @@
 body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: var(--dark-blue);
-  color: var(--light);
+  background-color: var(--beige);
+  color: var(--black);
 
   /* Variables */
-  --dark-blue: #202129;
-  --light: #f8f8f2;
-  --red: #fd9494;
+  --beige: #fff3db;
+  --red: #ca2b2b;
   --grey: #5c5b62;
-  --darker-blue: #2d2e39;
+  --black: #36454F;
 }
 
 #root {
@@ -26,5 +25,5 @@ body {
 
 a {
   text-decoration: none;
-  color: var(--light);
+  color: var(--red);
 }

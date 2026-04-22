@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router"
 import { App } from "./App"
 import ErrorPage from "./components/Error/Error"
 import { Home } from "./components/Home/Home"
+import { Play } from "./components/Play/Play"
 
 const routes = [
   {
@@ -12,6 +13,10 @@ const routes = [
       {
         element: <Home />,
         index: true,
+      },
+      {
+        element: <Play />,
+        path: "/play",
       },
     ],
   },

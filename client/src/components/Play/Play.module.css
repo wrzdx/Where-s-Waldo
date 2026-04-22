@@ -1,0 +1,36 @@
+.play h1,
+.play p {
+  text-align: center;
+}
+
+.play h1 {
+  color: var(--red);
+  margin-top: 1rem;
+}
+
+.play p {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.characters {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  list-style-type: none;
+}
+
+.characters li img {
+  height: 24rem;
+}
+
+.found {
+  filter: grayscale(1);
+}
+
+.map {
+  margin-block: 1rem;
+  border-radius: 1rem;
+  border: 3px solid var(--black);
+}
