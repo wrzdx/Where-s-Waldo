@@ -1,66 +1,144 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import styles from "./Play.module.css"
 import { Loader } from "../Loader/Loader"
+import { Dropdown } from "../Dropdown/Dropdown"
 
 const characters = [
   {
-    id: crypto.randomUUID(),
+    id: "luffy",
     name: "Luffy",
     src: "/luffy.png",
     isFound: false,
+    x: 53,
+    y: 16,
   },
   {
-    id: crypto.randomUUID(),
+    id: "zoro",
     name: "Zoro",
     src: "/zoro.png",
-    isFound: true,
+    isFound: false,
+    x: 59,
+    y: 11,
   },
   {
-    id: crypto.randomUUID(),
+    id: "sanji",
     name: "Sanji",
     src: "/sanji.png",
     isFound: false,
+    x: 48,
+    y: 43,
   },
 ]
 
 export function Play() {
-  const [counter, setCounter] = useState(0)
-  const [loading, setLoading] = useState(false)
+  const [dropdown, setDropdown] = useState({ visible: false, x: 0, y: 0 })
+  const [start, setStart] = useState(() => Date.now())
+  const [now, setNow] = useState(() => Date.now())
   const [toFind, setToFind] = useState(characters)
-  let content = <Loader />
+  const mapRef = useRef(null)
+  const elapsed = Math.floor((now - start) / 1000)
 
   useEffect(() => {
     const key = setInterval(() => {
-      setCounter((prev) => prev + 1)
+      setNow(Date.now())
     }, 1000)
 
-    return () => {
-      clearInterval(key)
-    }
+    return () => clearInterval(key)
   }, [])
 
-  if (!loading) {
-    content = (
-      <>
-        <h1>WHERE IS STRAWHAT?</h1>
-        <p>Try to find Luffy, Zoro and Sanji as soon as possible</p>
-        <p>Time: {formatTime(counter)}</p>
-        <div className={styles.board}>
-          <ul className={styles.characters}>
-            {toFind.map((char) => (
-              <li key={char.id} className={char.isFound ? styles.found : ""}>
-                <img src={char.src} alt={char.name} />
-                <p>{char.isFound ? <strike>{char.name}</strike> : char.name}</p>
-              </li>
-            ))}
-          </ul>
-          <img className={styles.map} src="/map.png" alt="map" />
-        </div>
-      </>
-    )
+  const isClose = (x1, y1, x2, y2) => {
+    const radius = 3
+    const dx = x1 - x2
+    const dy = y1 - y2
+    return dx * dx + dy * dy <= radius * radius
   }
 
-  return <main className={styles.play + " container"}>{content}</main>
+  const handleSelect = (id, x, y) => {
+    setToFind((prev) =>
+      prev.map((char) =>
+        char.id === id
+          ? { ...char, isFound: char.isFound || isClose(x, y, char.x, char.y) }
+          : char,
+      ),
+    )
+  }
+  const handleMapClick = (e) => {
+    e.stopPropagation()
+    const rect = mapRef.current.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / (rect.right - rect.left)) * 100
+    const y = ((e.clientY - rect.top) / (rect.bottom - rect.top)) * 100
+
+    setDropdown({ visible: true, x, y })
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const form = e.target
+  }
+
+  const form = (
+    <>
+      <div className={styles.backdrop} onClick={(e) => e.stopPropagation()}>
+        <form onSubmit={handleSubmit}>
+          <h2>Congrats!</h2>
+          <input type="text" name="nickname" placeholder="nickname" />
+          <button>Submit</button>
+        </form>
+      </div>
+    </>
+  )
+
+  const content = (
+    <>
+      {toFind.every((char) => char.isFound) && form}
+      <h1>WHERE IS STRAWHAT?</h1>
+      <p>Try to find Luffy, Zoro and Sanji as soon as possible</p>
+      <p>Time: {formatTime(elapsed)}</p>
+      <div className={styles.board}>
+        <ul className={styles.characters}>
+          {toFind.map((char) => (
+            <li key={char.id} className={char.isFound ? styles.found : ""}>
+              <img src={char.src} alt={char.name} />
+              <p>{char.isFound ? <strike>{char.name}</strike> : char.name}</p>
+            </li>
+          ))}
+        </ul>
+        <div className={styles.map}>
+          <img src="/map.png" alt="map" onClick={handleMapClick} ref={mapRef} />
+          {toFind
+            .filter((char) => char.isFound)
+            .map((char) => (
+              <div
+                style={{
+                  position: "absolute",
+                  top: char.y + "%",
+                  left: char.x + "%",
+                }}
+                className={styles.marker}
+              >✓</div>
+            ))}
+          <Dropdown
+            characters={toFind}
+            visible={dropdown.visible}
+            position={{ x: dropdown.x, y: dropdown.y }}
+            onSelect={(id, x, y) => {
+              handleSelect(id, x, y)
+              setDropdown((d) => ({ ...d, visible: false }))
+            }}
+          />
+        </div>
+      </div>
+    </>
+  )
+
+  return (
+    <main
+      onClick={() => setDropdown((d) => ({ ...d, visible: false }))}
+      className={styles.play + " container"}
+    >
+      {content}
+    </main>
+  )
 }
 
 const formatTime = (s) => {

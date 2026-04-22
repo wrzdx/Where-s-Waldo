@@ -7,15 +7,15 @@ export function Home() {
   const [loading, setLoading] = useState(false)
   const [players, setPlayers] = useState([
     {
-      username: "neo_dev",
+      nickname: "neo_dev",
       time: 1187,
     },
     {
-      username: "wrzdx",
+      nickname: "wrzdx",
       time: 1324,
     },
     {
-      username: "bytehunter",
+      nickname: "bytehunter",
       time: 1562,
     },
   ])
@@ -36,7 +36,7 @@ export function Home() {
             <div className={styles.scores}>
               {players.map((player) => (
                 <p>
-                  <span>{player.username}</span> <span>{player.time}s</span>
+                  <span>{player.nickname}</span> <span>{player.time}s</span>
                 </p>
               ))}
             </div>
