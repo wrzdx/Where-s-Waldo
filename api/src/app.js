@@ -5,9 +5,11 @@ import { router } from "./route.js"
 
 const PORT = process.env.PORT || 8000
 const app = express()
-app.use(cors({
-  origin: "http://localhost:5173"
-}))
+app.use(
+  cors({
+    origin: process.env.ORIGIN,
+  }),
+)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(router)
