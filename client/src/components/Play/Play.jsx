@@ -6,6 +6,7 @@ import { useNavigate } from "react-router"
 import Luffy from "/luffy.png"
 import Zoro from "/zoro.png"
 import Sanji from "/sanji.png"
+import Map from "/map.png"
 
 const API_URL = import.meta.env.VITE_API_URL
 const characters = [
@@ -182,7 +183,7 @@ export function Play() {
           ))}
         </ul>
         <div className={styles.map}>
-          <img src="/map.png" alt="map" onClick={handleMapClick} ref={mapRef} />
+          <img src={Map} alt="map" onClick={handleMapClick} ref={mapRef} />
           {toFind
             .filter((char) => char.isFound)
             .map((char) => (
