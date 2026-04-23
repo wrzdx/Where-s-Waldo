@@ -23,7 +23,9 @@ const routes = [
 ]
 
 export default function Router() {
-  const router = createBrowserRouter(routes)
+  const router = createBrowserRouter(routes, {
+    basename: "/Where-s-Waldo",
+  })
 
   return <RouterProvider router={router} />
 }
