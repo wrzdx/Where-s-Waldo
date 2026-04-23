@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import styles from "./Play.module.css"
 import { Loader } from "../Loader/Loader"
 import { Dropdown } from "../Dropdown/Dropdown"
-
+import { useNavigate } from "react-router"
+const API_URL = import.meta.env.VITE_API_URL
 const characters = [
   {
     id: "luffy",
@@ -32,19 +33,75 @@ const characters = [
 
 export function Play() {
   const [dropdown, setDropdown] = useState({ visible: false, x: 0, y: 0 })
-  const [start, setStart] = useState(() => Date.now())
-  const [now, setNow] = useState(() => Date.now())
+  const [start, setStart] = useState(null)
+  const [now, setNow] = useState(null)
+  const [token, setToken] = useState(null)
+  const [stopToken, setStopToken] = useState(null)
   const [toFind, setToFind] = useState(characters)
   const mapRef = useRef(null)
-  const elapsed = Math.floor((now - start) / 1000)
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true)
+  const elapsed = start && now ? Math.floor((now - start) / 1000) : 0
+
+  const finishGame = useCallback(async () => {
+    if (!token) return
+    const res = await fetch(`${API_URL}/stop`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+
+    if (!res.ok) {
+      alert(res.statusText)
+      return
+    }
+
+    const data = await res.json()
+    setStopToken(data.token)
+  }, [token])
 
   useEffect(() => {
+    let isMounted = true
+
+    const fetchData = async () => {
+      const res = await fetch(`${API_URL}/start`, {
+        method: "POST",
+      })
+
+      if (!res.ok) {
+        alert(res.statusText)
+      }
+      const data = await res.json()
+
+      if (isMounted) {
+        setToken(data.token)
+        setStart(Date.now())
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+  useEffect(() => {
+    if (!token) return
     const key = setInterval(() => {
       setNow(Date.now())
     }, 1000)
 
     return () => clearInterval(key)
-  }, [])
+  }, [token])
+  useEffect(() => {
+    if (!toFind.length) return
+
+    if (toFind.every((char) => char.isFound)) {
+      finishGame()
+    }
+  }, [toFind, finishGame])
 
   const isClose = (x1, y1, x2, y2) => {
     const radius = 3
@@ -71,9 +128,24 @@ export function Play() {
     setDropdown({ visible: true, x, y })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const form = e.target
+    if (!form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
+    await fetch(`${API_URL}/scores`, {
+      method: "POST",
+      body: JSON.stringify({
+        nickname: form.nickname.value,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + stopToken,
+      },
+    })
+    navigate("/")
   }
 
   const form = (
@@ -81,14 +153,16 @@ export function Play() {
       <div className={styles.backdrop} onClick={(e) => e.stopPropagation()}>
         <form onSubmit={handleSubmit}>
           <h2>Congrats!</h2>
-          <input type="text" name="nickname" placeholder="nickname" />
+          <input type="text" name="nickname" placeholder="nickname" required />
           <button>Submit</button>
         </form>
       </div>
     </>
   )
 
-  const content = (
+  const content = loading ? (
+    <Loader />
+  ) : (
     <>
       {toFind.every((char) => char.isFound) && form}
       <h1>WHERE IS STRAWHAT?</h1>
@@ -109,13 +183,16 @@ export function Play() {
             .filter((char) => char.isFound)
             .map((char) => (
               <div
+                key={"mark" + char.id}
                 style={{
                   position: "absolute",
                   top: char.y + "%",
                   left: char.x + "%",
                 }}
                 className={styles.marker}
-              >✓</div>
+              >
+                ✓
+              </div>
             ))}
           <Dropdown
             characters={toFind}

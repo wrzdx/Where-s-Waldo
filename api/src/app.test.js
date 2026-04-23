@@ -8,6 +8,13 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use("/", router)
+afterEach(async () => {
+  await prisma.user.deleteMany()
+})
+
+afterAll(async () => {
+  await prisma.$disconnect()
+})
 describe("POST /start", () => {
   test("should return a token", async () => {
     const res = await request(app).post("/start")
@@ -27,10 +34,15 @@ describe("POST /scores", () => {
   test("should save score", async () => {
     const start = await request(app).post("/start")
     const token = start.body.token
+    const stop = await request(app)
+      .post("/stop")
+      .set("Authorization", `Bearer ${token}`)
+    
+    const stopToken = stop.body.token
 
     await request(app)
       .post("/scores")
-      .set("Authorization", `Bearer ${token}`)
+      .set("Authorization", `Bearer ${stopToken}`)
       .send({ nickname: "test_user" })
 
     const users = await prisma.user.findMany({
