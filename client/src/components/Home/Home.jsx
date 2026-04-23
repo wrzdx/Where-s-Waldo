@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import styles from "./Home.module.css"
 import { Loader } from "../Loader/Loader"
 import { Link } from "react-router"
+import WaldoAndLuffy from "/waldo-and-luffy.png"
 const API_URL = import.meta.env.VITE_API_URL
 export function Home() {
   const [loading, setLoading] = useState(true)
@@ -11,7 +12,7 @@ export function Home() {
   if (!loading) {
     content = (
       <>
-        <img src="/waldo-and-luffy.png" alt="Waldo and Luffy" />
+        <img src={WaldoAndLuffy} alt="Waldo and Luffy" />
         <h1>WHERE IS STRAWHAT?</h1>
         <p>Try to find Luffy, Zoro, Sanji as soon as possible</p>
         <Link to="play">PLAY NOW</Link>

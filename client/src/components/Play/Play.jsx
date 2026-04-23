@@ -3,12 +3,16 @@ import styles from "./Play.module.css"
 import { Loader } from "../Loader/Loader"
 import { Dropdown } from "../Dropdown/Dropdown"
 import { useNavigate } from "react-router"
+import Luffy from "/luffy.png"
+import Zoro from "/zoro.png"
+import Sanji from "/sanji.png"
+
 const API_URL = import.meta.env.VITE_API_URL
 const characters = [
   {
     id: "luffy",
     name: "Luffy",
-    src: "/luffy.png",
+    src: Luffy,
     isFound: false,
     x: 53,
     y: 16,
@@ -16,7 +20,7 @@ const characters = [
   {
     id: "zoro",
     name: "Zoro",
-    src: "/zoro.png",
+    src: Zoro,
     isFound: false,
     x: 59,
     y: 11,
@@ -24,7 +28,7 @@ const characters = [
   {
     id: "sanji",
     name: "Sanji",
-    src: "/sanji.png",
+    src: Sanji,
     isFound: false,
     x: 48,
     y: 43,
